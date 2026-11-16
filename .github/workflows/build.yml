@@ -39,14 +39,26 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt pyinstaller
 
-      - name: Check the Windows window backend loads
-        if: runner.os == 'Windows'
-        run: python -c "import clr; import webview.platforms.winforms; print('winforms backend OK')"
-
       - name: Build
         run: |
           python tools/make_icon.py
           pyinstaller preset_picker.spec --noconfirm
+
+      - name: Diagnose (app without its unblock fix, expected to fail)
+        if: runner.os == 'Windows'
+        continue-on-error: true
+        shell: pwsh
+        run: ./tools/smoke_windows.ps1 -SkipUnblock
+
+      - name: Launch test (as downloaded from the internet)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: ./tools/smoke_windows.ps1
+
+      - name: Clear test marks before packaging
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: Get-ChildItem "dist/Preset Picker" -Recurse -File | Unblock-File
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
