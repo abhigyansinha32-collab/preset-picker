@@ -1,7 +1,8 @@
 # Builds Preset Picker for Windows x64 and macOS (Apple Silicon).
 # Windows on ARM runs the x64 build through Windows 11's built-in emulation: a native ARM64
 # build doesn't work yet because pythonnet's clr_loader ships no ARM64 ClrLoader.dll.
-# Push a tag like v1.0.0 to publish a GitHub Release with both downloads;
+# Windows ships as an installer (PresetPicker-Setup-x64.exe) plus a portable zip.
+# Push a tag like v1.0.0 to publish a GitHub Release with the downloads;
 # run it by hand (Actions > Build > Run workflow) to just test the builds.
 name: Build
 
@@ -45,14 +46,7 @@ jobs:
           python tools/make_icon.py
           pyinstaller preset_picker.spec --noconfirm
 
-      - name: Diagnose (app without its unblock fix, expected to fail)
-        if: runner.os == 'Windows'
-        continue-on-error: true
-        timeout-minutes: 5
-        shell: pwsh
-        run: ./tools/smoke_windows.ps1 -SkipUnblock
-
-      - name: Launch test (as downloaded from the internet)
+      - name: Launch test (unzipped, as downloaded from the internet)
         if: runner.os == 'Windows'
         timeout-minutes: 5
         shell: pwsh
@@ -62,6 +56,23 @@ jobs:
         if: runner.os == 'Windows'
         shell: pwsh
         run: Get-ChildItem "dist/Preset Picker" -Recurse -File | Unblock-File
+
+      - name: Build installer (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $iscc = "${env:ProgramFiles(x86)}\Inno Setup 6\ISCC.exe"
+          if (-not (Test-Path $iscc)) { choco install innosetup -y --no-progress | Out-Null }
+          $version = python -c "from presetpicker import __version__; print(__version__)"
+          & $iscc "/DAppVersion=$version" installer\PresetPicker.iss
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Move-Item dist\PresetPicker-Setup-x64.exe .
+
+      - name: Launch test (installed with the setup)
+        if: runner.os == 'Windows'
+        timeout-minutes: 10
+        shell: pwsh
+        run: ./tools/smoke_windows.ps1 -Installer PresetPicker-Setup-x64.exe
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
@@ -75,7 +86,10 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: ${{ matrix.asset }}
-          path: ${{ matrix.asset }}
+          path: |
+            ${{ matrix.asset }}
+            PresetPicker-Setup-*.exe
+          if-no-files-found: error
 
   release:
     if: startsWith(github.ref, 'refs/tags/v')
@@ -87,5 +101,7 @@ jobs:
           merge-multiple: true
       - uses: softprops/action-gh-release@v2
         with:
-          files: PresetPicker-*.zip
+          files: |
+            PresetPicker-*.zip
+            PresetPicker-Setup-*.exe
           generate_release_notes: true
