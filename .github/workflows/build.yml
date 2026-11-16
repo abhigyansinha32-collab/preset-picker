@@ -23,7 +23,7 @@ jobs:
           - os: windows-11-arm
             arch: arm64
             asset: PresetPicker-Windows-ARM64.zip
-          - os: macos-14
+          - os: macos-latest   # Apple Silicon runner
             arch: arm64
             asset: PresetPicker-macOS-AppleSilicon.zip
     runs-on: ${{ matrix.os }}
