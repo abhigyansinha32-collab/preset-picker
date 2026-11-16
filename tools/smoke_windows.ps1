@@ -14,8 +14,17 @@ Remove-Item $result -ErrorAction SilentlyContinue
 $env:PRESETPICKER_SMOKE = $result
 if ($SkipUnblock) { $env:PRESETPICKER_SKIP_UNBLOCK = "1" } else { Remove-Item Env:PRESETPICKER_SKIP_UNBLOCK -ErrorAction SilentlyContinue }
 
-$p = Start-Process -FilePath (Join-Path $app "Preset Picker.exe") -PassThru
-if (-not $p.WaitForExit(120000)) { $p.Kill(); throw "App did not exit within 2 minutes" }
+# CreateProcess directly (not ShellExecute): a marked .exe started via the shell shows the
+# "Open File - Security Warning" prompt, which nobody can click on a CI runner.
+$psi = [System.Diagnostics.ProcessStartInfo]::new((Join-Path $app "Preset Picker.exe"))
+$psi.UseShellExecute = $false
+$p = [System.Diagnostics.Process]::Start($psi)
+if (-not $p.WaitForExit(120000)) {
+    # Kill the whole tree (and any crash dialog) so nothing keeps the CI step open.
+    taskkill /PID $p.Id /T /F | Out-Null
+    Get-Process WerFault -ErrorAction SilentlyContinue | Stop-Process -Force
+    throw "App did not exit within 2 minutes"
+}
 
 $text = if (Test-Path $result) { Get-Content $result -Raw } else { "no result written (exit code $($p.ExitCode))" }
 Write-Host "Smoke test: $text"

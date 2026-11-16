@@ -26,6 +26,7 @@ jobs:
             arch: arm64
             asset: PresetPicker-macOS-AppleSilicon.zip
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
 
@@ -47,11 +48,13 @@ jobs:
       - name: Diagnose (app without its unblock fix, expected to fail)
         if: runner.os == 'Windows'
         continue-on-error: true
+        timeout-minutes: 5
         shell: pwsh
         run: ./tools/smoke_windows.ps1 -SkipUnblock
 
       - name: Launch test (as downloaded from the internet)
         if: runner.os == 'Windows'
+        timeout-minutes: 5
         shell: pwsh
         run: ./tools/smoke_windows.ps1
 
