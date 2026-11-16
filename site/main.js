@@ -71,8 +71,8 @@ fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
     for (const a of document.querySelectorAll("[data-asset]")) {
       const asset = rel.assets.find(x => x.name === a.dataset.asset);
       const size = a.querySelector(".size");
-      if (asset && size) size.textContent = `${Math.round(asset.size / 1e6)} MB`;
-      else a.classList.add("disabled");
+      if (!asset) a.classList.add("disabled");
+      else if (size) size.textContent = `${Math.round(asset.size / 1e6)} MB`;
     }
   })
   .catch(() => { $("#version").textContent = "Free download"; });
