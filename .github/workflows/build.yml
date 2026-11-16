@@ -40,6 +40,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt pyinstaller
 
+      - name: Check the Windows window backend loads
+        if: runner.os == 'Windows'
+        run: python -c "import clr; import webview.platforms.winforms; print('winforms backend OK')"
+
       - name: Build
         run: |
           python tools/make_icon.py
