@@ -98,8 +98,8 @@
           <a class="variant" id="win-x64" data-asset="PresetPicker-Windows-x64.zip">
             <div><b>x64</b><small>Intel &amp; AMD processors (most PCs)</small></div><span class="size"></span><span class="arrow">↓</span>
           </a>
-          <a class="variant" id="win-arm64" data-asset="PresetPicker-Windows-ARM64.zip">
-            <div><b>ARM64</b><small>Snapdragon &amp; other ARM PCs</small></div><span class="size"></span><span class="arrow">↓</span>
+          <a class="variant" id="win-arm64" data-asset="PresetPicker-Windows-x64.zip">
+            <div><b>ARM64</b><small>Snapdragon &amp; other ARM PCs · runs the x64 version through Windows 11's built-in emulation</small></div><span class="size"></span><span class="arrow">↓</span>
           </a>
         </div>
         <details>
@@ -107,7 +107,7 @@
           <ol>
             <li>Unzip the download and open <b>Preset Picker.exe</b> inside the folder.</li>
             <li>If SmartScreen says "Windows protected your PC", click <b>More info → Run anyway</b>. The app isn't code-signed yet.</li>
-            <li>Not sure which one? Settings → System → About → <i>System type</i>. "ARM-based processor" means ARM64; anything else, x64.</li>
+            <li>On an ARM PC (Snapdragon and others) you need Windows 11. It runs the x64 version automatically; there's nothing extra to install.</li>
             <li>Uses Microsoft Edge WebView2, which comes with Windows 11 and up-to-date Windows 10.</li>
           </ol>
         </details>

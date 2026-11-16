@@ -2,7 +2,7 @@
 
 A small app for Windows and macOS for choosing a Lightroom preset for each photo straight off your camera card.
 
-**Download:** see the [Releases](../../releases/latest) page: Windows x64, Windows ARM64, and macOS (Apple Silicon).
+**Download:** see the [Releases](../../releases/latest) page: Windows (x64; also runs on Windows 11 ARM PCs through emulation) and macOS (Apple Silicon).
 
 1. **Setup.** Pick a camera card (detected when inserted) or folder, a shoot day or date range, and your folder of `.xmp` presets.
 2. **Pick.** Browse the shoot as a grid and choose a preset per photo, or select several and apply one to all. Double-click a photo (or press Space) for a large before/after preview with a draggable split.
@@ -29,7 +29,7 @@ macOS (Apple Silicon):
 ./build.sh --install  # also copies it to /Applications
 ```
 
-Windows (x64 or ARM64, using a Python for that architecture):
+Windows (x64):
 
 ```powershell
 py -m pip install -r requirements.txt pyinstaller
@@ -39,7 +39,7 @@ py -m PyInstaller preset_picker.spec --noconfirm   # -> dist\Preset Picker\Prese
 
 ## Releases
 
-`.github/workflows/build.yml` builds all three versions on GitHub. Push a tag (`git tag v1.0.1 && git push --tags`) to publish a release; the website in `site/` (published by `pages.yml`) always links to the latest one.
+`.github/workflows/build.yml` builds both versions on GitHub. Push a tag (`git tag v1.0.1 && git push --tags`) to publish a release; the website in `site/` (published by `pages.yml`) always links to the latest one.
 
 ## Keyboard
 

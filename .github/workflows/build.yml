@@ -1,5 +1,7 @@
-# Builds Preset Picker for Windows x64, Windows ARM64 and macOS (Apple Silicon).
-# Push a tag like v1.0.0 to publish a GitHub Release with all three downloads;
+# Builds Preset Picker for Windows x64 and macOS (Apple Silicon).
+# Windows on ARM runs the x64 build through Windows 11's built-in emulation: a native ARM64
+# build doesn't work yet because pythonnet's clr_loader ships no ARM64 ClrLoader.dll.
+# Push a tag like v1.0.0 to publish a GitHub Release with both downloads;
 # run it by hand (Actions > Build > Run workflow) to just test the builds.
 name: Build
 
@@ -20,9 +22,6 @@ jobs:
           - os: windows-latest
             arch: x64
             asset: PresetPicker-Windows-x64.zip
-          - os: windows-11-arm
-            arch: arm64
-            asset: PresetPicker-Windows-ARM64.zip
           - os: macos-latest   # Apple Silicon runner
             arch: arm64
             asset: PresetPicker-macOS-AppleSilicon.zip

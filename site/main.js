@@ -41,8 +41,8 @@ detect().then(({ os, arch }) => {
   if (os === "win") {
     pick = arch === "arm" ? "#win-arm64" : "#win-x64";
     $("#dl-win").classList.add("recommended");
-    hero.textContent = arch === "arm" ? "Download for Windows (ARM64)" : "Download for Windows";
-    hint.textContent = arch === "arm" ? "Windows 10/11 on ARM · Snapdragon" : "Windows 10/11 · Intel & AMD";
+    hero.textContent = "Download for Windows";
+    hint.textContent = arch === "arm" ? "Windows 11 on ARM · runs through built-in x64 emulation" : "Windows 10/11 · Intel & AMD";
   } else if (os === "mac") {
     $("#dl-mac").classList.add("recommended");
     if (arch === "x86") {
