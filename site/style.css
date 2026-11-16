@@ -146,6 +146,8 @@ code { font: .9em ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; back
 .variant.pick small, .variant.pick .size { color: color-mix(in srgb, var(--bg) 70%, transparent); }
 .variant.pick .arrow { background: var(--accent); color: #fff; }
 .variant.disabled { opacity: .55; pointer-events: none; }
+.alt { font-size: 13.5px; color: var(--sub); margin: 12px 2px 0; }
+.alt a.disabled { pointer-events: none; color: var(--sub); }
 details { margin-top: 18px; font-size: 14.5px; }
 summary { cursor: pointer; font-weight: 600; color: var(--sub); }
 details ol { color: var(--sub); padding-left: 20px; margin: 10px 0 0; }

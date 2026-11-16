@@ -95,19 +95,20 @@
           <div><h3>Windows</h3><p class="sub">Windows 10 &amp; 11 · every chip type</p></div>
         </div>
         <div class="variants">
-          <a class="variant" id="win-x64" data-asset="PresetPicker-Windows-x64.zip">
-            <div><b>x64</b><small>Intel &amp; AMD processors (most PCs)</small></div><span class="size"></span><span class="arrow">↓</span>
+          <a class="variant" id="win-x64" data-asset="PresetPicker-Setup-x64.exe">
+            <div><b>Installer</b><small>Intel &amp; AMD PCs (most Windows computers)</small></div><span class="size"></span><span class="arrow">↓</span>
           </a>
-          <a class="variant" id="win-arm64" data-asset="PresetPicker-Windows-x64.zip">
-            <div><b>ARM64</b><small>Snapdragon &amp; other ARM PCs · runs the x64 version through Windows 11's built-in emulation</small></div><span class="size"></span><span class="arrow">↓</span>
+          <a class="variant" id="win-arm64" data-asset="PresetPicker-Setup-x64.exe">
+            <div><b>Installer for ARM PCs</b><small>Snapdragon &amp; other ARM PCs on Windows 11 · same app, runs through built-in x64 emulation</small></div><span class="size"></span><span class="arrow">↓</span>
           </a>
         </div>
+        <p class="alt">No install rights? Get the <a data-asset="PresetPicker-Windows-x64.zip">portable zip</a> instead. Extract it before opening.</p>
         <details>
           <summary>Installing on Windows</summary>
           <ol>
-            <li>Unzip the download and open <b>Preset Picker.exe</b> inside the folder.</li>
+            <li>Open <b>PresetPicker-Setup-x64.exe</b> and click through. No admin password needed; it adds Preset Picker to your Start menu.</li>
             <li>If SmartScreen says "Windows protected your PC", click <b>More info → Run anyway</b>. The app isn't code-signed yet.</li>
-            <li>On an ARM PC (Snapdragon and others) you need Windows 11. It runs the x64 version automatically; there's nothing extra to install.</li>
+            <li>Uninstall any time from Settings → Apps.</li>
             <li>Uses Microsoft Edge WebView2, which comes with Windows 11 and up-to-date Windows 10.</li>
           </ol>
         </details>

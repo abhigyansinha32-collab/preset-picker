@@ -70,7 +70,8 @@ fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
     $("#version").textContent = `Version ${rel.tag_name.replace(/^v/, "")} · ${date}`;
     for (const a of document.querySelectorAll("[data-asset]")) {
       const asset = rel.assets.find(x => x.name === a.dataset.asset);
-      if (asset) a.querySelector(".size").textContent = `${Math.round(asset.size / 1e6)} MB`;
+      const size = a.querySelector(".size");
+      if (asset && size) size.textContent = `${Math.round(asset.size / 1e6)} MB`;
       else a.classList.add("disabled");
     }
   })
