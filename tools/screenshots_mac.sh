@@ -37,24 +37,19 @@ limit 20 osascript -e 'tell application "System Events" to tell process "CoreSer
 sleep 2
 open "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension" &
 sleep 10
-limit 90 osascript -e 'tell application "System Events" to tell process "System Settings"
+# The page content isn't scriptable, so scroll it with the keyboard: Tab into it, then End.
+limit 30 osascript -e 'tell application "System Events" to tell process "System Settings"
   set frontmost to true
-  set found to 0
-  repeat with x in (entire contents of window 1)
-    try
-      if class of x is scroll bar and orientation of x is "AXVerticalOrientation" then set value of x to 1.0
-    end try
-  end repeat
   delay 1
-  repeat with x in (entire contents of window 1)
-    try
-      if class of x is button and name of x contains "Open Anyway" then
-        perform action "AXScrollToVisible" of x
-        set found to found + 1
-      end if
-    end try
+  key code 48
+  delay 0.5
+  key code 48
+  delay 0.5
+  repeat 6 times
+    key code 121
+    delay 0.3
   end repeat
-  return "Open Anyway buttons: " & found
+  key code 119
 end tell'
 shot mac-3-open-anyway 3
 
