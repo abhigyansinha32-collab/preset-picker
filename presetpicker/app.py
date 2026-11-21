@@ -139,14 +139,15 @@ class Api:
             base = self._bases.put(i, Image.open(io.BytesIO(jpeg)).convert("RGB"))
         before = photos.data_uri(render.to_jpeg(base))
         if not preset_id:
-            return {"before": before, "after": before}
+            return {"before": before, "after": before, "settings": ""}
+        if preset_id not in self._preset_settings:
+            self._preset_settings[preset_id] = presets.read_settings(preset_id)
+        settings = self._preset_settings[preset_id]
         key = (i, preset_id)
         if key not in self._renders:
-            if preset_id not in self._preset_settings:
-                self._preset_settings[preset_id] = presets.read_settings(preset_id)
-            out = render.apply_preset(base, self._preset_settings[preset_id])
+            out = render.apply_preset(base, settings)
             self._renders.put(key, photos.data_uri(render.to_jpeg(out)))
-        return {"before": before, "after": self._renders[key]}
+        return {"before": before, "after": self._renders[key], "settings": presets.summary(settings)}
 
     # -------------------------------------------------------------- export ---
 

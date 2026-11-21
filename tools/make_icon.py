@@ -1,5 +1,4 @@
 """Draw the app icon: assets/AppIcon.png, AppIcon.ico (Windows) and, on macOS, AppIcon.icns."""
-import colorsys
 import subprocess
 import sys
 import tempfile
@@ -12,27 +11,37 @@ ROOT = Path(__file__).resolve().parent.parent
 SIZE = 1024
 
 
+CHARCOAL, CREAM, AMBER, TEAL = (30, 27, 24), (243, 237, 226), (224, 164, 88), (91, 138, 140)
+
+
 def draw(size=SIZE):
-    # Colour wheel ring on a dark rounded square: "pick a look".
-    yy, xx = np.mgrid[0:size, 0:size].astype(np.float32)
-    cx = cy = size / 2
-    ang = (np.degrees(np.arctan2(yy - cy, xx - cx)) + 200) % 360 / 360
-    rgb = np.array([colorsys.hsv_to_rgb(h, 0.72, 1.0) for h in np.linspace(0, 1, 361)])
-    wheel = (rgb[(ang * 360).astype(int)] * 255).astype(np.uint8)
-    ring = Image.fromarray(wheel, "RGB")
+    """Grain & Glow mark: an amber sun glowing over a faded-teal horizon, inside a cream print
+    border on charcoal, with a little film grain."""
+    m = int(size * 0.1)                       # macOS icon grid margin
+    yy, xx = np.mgrid[0:size, 0:size].astype(np.float32) / size
+
+    # Photo area: charcoal sky, soft amber glow, teal hills, grain.
+    img = np.ones((size, size, 3), np.float32) * np.array(CHARCOAL) / 255
+    cx, cy, r = .5, .5, .17
+    d = np.sqrt((xx - cx) ** 2 + (yy - cy) ** 2)
+    glow = np.clip(1 - (d - r) / .22, 0, 1) ** 2.2 * (d > r)
+    img = img + glow[..., None] * (np.array(AMBER) / 255 - img) * .55
+    img = np.where((d <= r)[..., None], np.array(AMBER) / 255, img)
+    hill = .62 + .035 * np.sin(xx * 7.5 + .6)
+    img = np.where((yy > hill)[..., None], np.array(TEAL) / 255 * .78, img)
+    rng = np.random.default_rng(3)
+    img = img + rng.normal(0, .035, (size, size, 1))
+    photo = Image.fromarray((np.clip(img, 0, 1) * 255).astype(np.uint8), "RGB")
 
     icon = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    m = int(size * 0.1)
-    bg = Image.new("RGBA", (size, size), (0, 0, 0, 0))
-    ImageDraw.Draw(bg).rounded_rectangle([m, m, size - m, size - m], radius=int(size * 0.18), fill=(28, 28, 32, 255))
-    icon.alpha_composite(bg)
-
-    mask = Image.new("L", (size, size), 0)
-    d = ImageDraw.Draw(mask)
-    r_out, r_in = size * 0.31, size * 0.17
-    d.ellipse([cx - r_out, cy - r_out, cx + r_out, cy + r_out], fill=255)
-    d.ellipse([cx - r_in, cy - r_in, cx + r_in, cy + r_in], fill=0)
-    icon.paste(ring, (0, 0), mask)
+    card = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(card).rounded_rectangle([m, m, size - m, size - m], radius=int(size * .18), fill=255)
+    icon.paste(Image.new("RGBA", (size, size), CREAM + (255,)), (0, 0), card)   # print border
+    b = int(size * .055)
+    window = Image.new("L", (size, size), 0)
+    ImageDraw.Draw(window).rounded_rectangle([m + b, m + b, size - m - b, size - m - b],
+                                             radius=int(size * .13), fill=255)
+    icon.paste(photo, (0, 0), window)
     return icon
 
 

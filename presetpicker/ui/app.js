@@ -8,6 +8,14 @@ const el = (tag, cls, text) => {
   return e;
 };
 
+// Small line icons (stroke follows the text colour).
+const ICONS = {
+  card: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M7 3h8l4 4v14H7z"/><path d="M10 3v4M13 3v4M16 4.5V7"/></svg>',
+  folder: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"><path d="M3 6h6l2 2h10v11H3z"/></svg>',
+  plus: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>',
+};
+const icon = name => Object.assign(document.createElement("span"), { className: "ico", innerHTML: ICONS[name] });
+
 const state = {
   settings: {}, cards: [], presets: [], days: [],
   from: "", to: "", anchor: null,
@@ -43,14 +51,14 @@ function renderSources() {
   const box = $("#sources");
   box.replaceChildren();
   const cur = state.settings.source;
-  const tiles = state.cards.map(c => ({ ico: "💾", name: c.name, detail: "Camera card", path: c.path }));
+  const tiles = state.cards.map(c => ({ ico: "card", name: c.name, detail: "Camera card", path: c.path }));
   if (cur && !tiles.some(t => t.path === cur))
-    tiles.push({ ico: "📁", name: cur.split("/").filter(Boolean).pop() || cur, detail: cur, path: cur });
+    tiles.push({ ico: "folder", name: cur.split("/").filter(Boolean).pop() || cur, detail: cur, path: cur });
   for (const t of tiles) {
     const b = el("button", "source" + (t.path === cur ? " on" : ""));
     const txt = el("div");
     txt.append(el("b", null, t.name), el("small", null, t.detail));
-    b.append(el("span", "ico", t.ico), txt);
+    b.append(icon(t.ico), txt);
     b.title = t.path;
     b.onclick = () => pickSource(t.path);
     box.append(b);
@@ -58,7 +66,7 @@ function renderSources() {
   const choose = el("button", "source");
   const txt = el("div");
   txt.append(el("b", null, "Choose folder…"), el("small", null, "Any folder on your Mac"));
-  choose.append(el("span", "ico", "＋"), txt);
+  choose.append(icon("plus"), txt);
   choose.onclick = async () => {
     const s = await api.choose_folder("source");
     if (s) { state.settings = s; pickSource(s.source); }
@@ -115,7 +123,7 @@ function renderPresets() {
   const box = $("#presetList");
   box.replaceChildren();
   if (!state.presets.length) {
-    box.append(el("p", "warn", "No .xmp presets in this folder. Export your presets from Lightroom and choose that folder."));
+    box.append(el("p", "warn", "I can't find any .xmp presets here. Export your presets from Lightroom, then choose that folder."));
   } else {
     for (const p of state.presets) box.append(el("span", "chip", p.name));
   }
@@ -199,7 +207,7 @@ async function showPhotos() {
     fillPresetSelect(sel, "No preset");
     sel.onchange = () => setChoice(p.i, sel.value);
     sel.onclick = e => e.stopPropagation();
-    meta.append(row, sel, el("p", "warn", "Lightroom ignores sidecars for " + p.ext + ". Apply this preset in Lightroom."));
+    meta.append(row, sel, el("p", "warn", "Lightroom won't add this to a " + p.ext + " by itself. Apply it there with one click."));
     card.append(ph, meta);
     card.onclick = e => toggleSelect(p.i, e.shiftKey);
     card.ondblclick = () => openLightbox(p.i);
@@ -258,11 +266,11 @@ async function exportPhotos() {
   const r = await api.export(state.choices);
   if (r.error) { alert(r.error); refresh(); return; }
   const total = r.raw + r.other;
-  $("#doneTitle").textContent = `Exported ${total} photo${total === 1 ? "" : "s"}`;
+  $("#doneTitle").textContent = `${total} photo${total === 1 ? "" : "s"} ready for Lightroom`;
   $("#donePath").textContent = r.folder;
   $("#doneWarn").hidden = !r.other;
   $("#doneWarn").textContent = r.other
-    ? `${r.other} JPEG/HEIC photo${r.other === 1 ? " was" : "s were"} copied too, but Lightroom only reads sidecars for raw files. Apply the preset to ${r.other === 1 ? "it" : "them"} inside Lightroom.`
+    ? `${r.other} JPEG/HEIC photo${r.other === 1 ? "" : "s"} came along too. Lightroom won't put the preset on ${r.other === 1 ? "it" : "those"} by itself, so apply it there with one click.`
     : "";
   $("#reveal").onclick = () => api.reveal(r.folder);
   show("done");
@@ -309,6 +317,7 @@ async function renderLightbox() {
   $("#compare").hidden = !!r.error;
   $("#stage").classList.remove("loading");
   if (r.error) { $("#lbError").textContent = r.error; return; }
+  $("#lbSettings").textContent = r.settings || "";
   $("#lbBefore").src = r.before;
   $("#lbAfter").src = r.after;
   setSplit(lb.pos);

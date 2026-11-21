@@ -117,3 +117,27 @@ def build_sidecar(preset_path):
     ET.indent(root)
     return (b'<?xpacket begin="\xef\xbb\xbf" id="W5M0MpCehiHzreSzNTczkc9d"?>\n'
             + ET.tostring(root, encoding="utf-8") + b'\n<?xpacket end="w"?>\n')
+
+
+# Short darkroom-style label for the UI, e.g. "EXP −0.18 · CON +45 · TEX +19".
+_SUMMARY = [("Exposure2012", "EXP", 2), ("Contrast2012", "CON", 0), ("Highlights2012", "HL", 0),
+            ("Shadows2012", "SH", 0), ("Whites2012", "WH", 0), ("Blacks2012", "BL", 0),
+            ("Texture", "TEX", 0), ("Clarity2012", "CLR", 0), ("Dehaze", "DHZ", 0),
+            ("Vibrance", "VIB", 0), ("Saturation", "SAT", 0), ("GrainAmount", "GRAIN", 0),
+            ("PostCropVignetteAmount", "VIG", 0)]
+
+
+def summary(settings, limit=7):
+    parts = []
+    if settings.get("Temperature"):
+        parts.append(f"TEMP {settings['Temperature']}K")
+    for key, label, digits in _SUMMARY:
+        try:
+            v = float(settings.get(key, 0))
+        except (TypeError, ValueError):
+            continue
+        if v:
+            text = f"{abs(v):.{digits}f}"
+            sign = "" if key == "GrainAmount" else ("+" if v > 0 else "−")
+            parts.append(f"{label} {sign}{text}")
+    return " · ".join(parts[:limit])

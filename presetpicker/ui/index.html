@@ -4,6 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Preset Picker</title>
+<!-- Brand fonts; without internet the app falls back to system fonts. -->
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@500&display=swap">
 <link rel="stylesheet" href="app.css">
 </head>
 <body>
@@ -12,40 +14,40 @@
 <main id="setup" class="view">
   <div class="setup">
     <header class="setup-head">
-      <div class="logo" aria-hidden="true"></div>
       <div>
         <h1>Preset Picker</h1>
-        <p class="sub">Choose your photos and presets, then pick a look for each shot.</p>
+        <p class="sub">Choose a shoot and your presets, then give each photo its own look.</p>
       </div>
+      <span class="brand">Grain <i>&amp;</i> Glow</span>
     </header>
 
     <section class="step">
-      <div class="step-head"><span class="num">1</span><h2>Photos from</h2>
+      <div class="step-head"><span class="num">01</span><h2>Photos from</h2>
         <span class="sp"></span><button class="link" id="rescan" title="Scan the source again">Rescan</button></div>
       <div class="sources" id="sources"></div>
     </section>
 
     <section class="step">
-      <div class="step-head"><span class="num">2</span><h2>Shoot days</h2><span class="sp"></span>
+      <div class="step-head"><span class="num">02</span><h2>Shoot days</h2><span class="sp"></span>
         <span class="sub" id="rangeCount"></span></div>
       <div class="range">
         <label>From <input type="date" id="from"></label>
         <label>To <input type="date" id="to"></label>
         <button class="link" id="allDates">All dates</button>
       </div>
-      <p class="hint">Click a day to pick it, shift-click to pick a range.</p>
-      <div class="days" id="days"><p class="empty">Pick a card or folder first.</p></div>
+      <p class="hint">Click a day to pick it. Shift-click another day to pick everything in between.</p>
+      <div class="days" id="days"><p class="empty">Choose a card or folder above first.</p></div>
     </section>
 
     <section class="step">
-      <div class="step-head"><span class="num">3</span><h2>Presets</h2><span class="sp"></span>
+      <div class="step-head"><span class="num">03</span><h2>Presets</h2><span class="sp"></span>
         <button class="link" data-choose="presets">Change…</button></div>
       <div class="path" id="presetPath"></div>
       <div class="chips" id="presetList"></div>
     </section>
 
     <section class="step">
-      <div class="step-head"><span class="num">4</span><h2>Save exports to</h2><span class="sp"></span>
+      <div class="step-head"><span class="num">04</span><h2>Save to</h2><span class="sp"></span>
         <button class="link" data-choose="output">Change…</button></div>
       <div class="path" id="outputPath"></div>
     </section>
@@ -83,7 +85,7 @@
   <div class="done">
     <div class="check" aria-hidden="true">✓</div>
     <h1 id="doneTitle"></h1>
-    <p class="sub">Import this folder into Lightroom. Raw photos open with their preset already applied.</p>
+    <p class="sub">Import this folder into Lightroom. Your raw photos open with their preset already on.</p>
     <code id="donePath"></code>
     <p class="warn" id="doneWarn" hidden></p>
     <div class="done-actions">
@@ -114,11 +116,12 @@
     <div class="spinner" id="spinner"></div>
     <p class="lb-error" id="lbError" hidden></p>
   </div>
+  <p class="settings" id="lbSettings"></p>
   <footer class="lb-bottom">
     <button class="icon" id="lbPrev" title="Previous (←)">‹</button>
     <select id="lbPreset"></select>
     <button class="icon" id="lbNext" title="Next (→)">›</button>
-    <span class="note">Approximate preview. Lightroom renders the exact look.</span>
+    <span class="note">Preview is a close guess · Lightroom does the real edit</span>
   </footer>
 </div>
 
