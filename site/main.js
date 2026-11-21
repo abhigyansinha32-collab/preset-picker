@@ -40,21 +40,19 @@ detect().then(({ os, arch }) => {
   let pick = null;
   if (os === "win") {
     pick = arch === "arm" ? "#win-arm64" : "#win-x64";
-    $("#dl-win").classList.add("recommended");
+    $("#dl-win").classList.add("mine");
     hero.textContent = "Download for Windows";
-    hint.textContent = arch === "arm" ? "Windows 11 on ARM · runs through built-in x64 emulation" : "Windows 10/11 · Intel & AMD";
+    hint.textContent = arch === "arm" ? "Free · Windows 11 on ARM" : "Free · Windows 10 & 11";
   } else if (os === "mac") {
-    $("#dl-mac").classList.add("recommended");
+    $("#dl-mac").classList.add("mine");
     if (arch === "x86") {
       $("#intelMac").hidden = false;
-      hint.textContent = "Needs a Mac with Apple Silicon (M1 or newer).";
+      hint.textContent = "Needs a Mac with Apple Silicon (M1 or newer)";
     } else {
       pick = "#mac-arm64";
       hero.textContent = "Download for Mac";
-      hint.textContent = "macOS 11 or later · Apple Silicon";
+      hint.textContent = "Free · macOS 11+ · Apple Silicon";
     }
-  } else {
-    hint.textContent = "Available for Windows (x64 & ARM64) and Macs with Apple Silicon.";
   }
   if (pick) {
     $(pick).classList.add("pick");
@@ -76,3 +74,7 @@ fetch(`https://api.github.com/repos/${REPO}/releases/latest`)
     }
   })
   .catch(() => { $("#version").textContent = "Free download"; });
+
+/* Before/after slider */
+const compare = $("#compare");
+$("#slider").addEventListener("input", e => compare.style.setProperty("--pos", e.target.value + "%"));

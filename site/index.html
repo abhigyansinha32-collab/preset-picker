@@ -3,148 +3,176 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Preset Picker: Lightroom presets for every shot</title>
-<meta name="description" content="Pick a Lightroom preset for each photo straight off your camera card, with a live before/after, and export Lightroom-ready files. Free for Windows and macOS.">
+<title>Preset Picker by Grain &amp; Glow</title>
+<meta name="description" content="A free app for hobby photographers: open your shoot straight off the memory card, pick a Lightroom preset for each photo, and send them to Lightroom with the look already on. Mac and Windows.">
+<meta name="theme-color" content="#F3EDE2">
 <link rel="icon" href="favicon.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-<header class="nav">
-  <a class="brand" href="#top"><img src="icon.png" alt="" width="30" height="30">Preset Picker</a>
+<header class="top">
+  <a class="wordmark" href="#top">Grain <i>&amp;</i> Glow</a>
   <nav>
-    <a href="#features">Features</a>
     <a href="#how">How it works</a>
     <a href="#download">Download</a>
-    <a class="gh" data-repo-link href="#" target="_blank" rel="noopener">GitHub</a>
+    <a data-repo-link href="#" target="_blank" rel="noopener">Source</a>
   </nav>
 </header>
 
 <main id="top">
-  <!-- Hero ------------------------------------------------------------------>
+
   <section class="hero">
-    <div class="hero-copy">
-      <span class="pill">Free &amp; open source · Windows &amp; macOS</span>
-      <h1>The right preset<br>for <em>every</em> shot.</h1>
-      <p class="lede">Preset Picker opens your latest shoot straight from the memory card. Choose a Lightroom preset for each photo with a live before/after, then export files that open in Lightroom with the look already applied.</p>
-      <div class="cta">
-        <a class="btn primary" id="heroDownload" href="#download">Download</a>
-        <a class="btn ghost" href="#download">All downloads</a>
+    <div class="hero-text">
+      <p class="label">Preset Picker · a free app from Grain &amp; Glow</p>
+      <h1>Give every photo <em>its own</em> look.</h1>
+      <p class="lede">I shoot for fun, and I got tired of clicking through presets one photo at a time. So I made a little app for it. Pop in your memory card, pick a preset for each shot, and the photos land in Lightroom with the look already on.</p>
+      <div class="actions">
+        <a class="btn" id="heroDownload" href="#download">Download</a>
+        <a class="textlink" href="#download">Mac &amp; Windows downloads</a>
       </div>
-      <p class="fine" id="heroHint"></p>
+      <p class="label muted" id="heroHint">Free · Mac &amp; Windows</p>
     </div>
 
-    <div class="mock" aria-hidden="true">
-      <div class="mock-bar"><i></i><i></i><i></i><span>Preset Picker</span></div>
-      <div class="mock-tool">
-        <b>Sat, 4 July</b><span>40 photos · 12 with a preset</span>
-        <em class="mock-export">Export 12</em>
+    <figure class="print">
+      <div class="compare" id="compare" style="--pos: 50%">
+        <img src="img/rosenlaui-before.jpg" alt="Mountain valley near Rosenlaui, Switzerland, straight out of the camera" width="1500" height="1000">
+        <img class="after" src="img/rosenlaui-after.jpg" alt="The same photo with a warm film preset applied" width="1500" height="1000">
+        <span class="corner left">Before</span><span class="corner right">After</span>
+        <span class="handle" aria-hidden="true"></span>
+        <input type="range" min="0" max="100" value="50" aria-label="Drag to compare before and after" id="slider">
       </div>
-      <div class="mock-grid">
-        <div class="ph p1"><span class="tag">Golden Hour</span></div>
-        <div class="ph p2"><span class="tag">Alpine Fade</span></div>
-        <div class="ph p3"></div>
-        <div class="ph p4 sel"><span class="tag">Golden Hour</span></div>
-        <div class="ph p5"></div>
-        <div class="ph p6"><span class="tag">Moody Film</span></div>
-      </div>
-      <div class="mock-compare">
-        <div class="half before">Before</div><div class="half after">After</div><div class="knob"></div>
-      </div>
-    </div>
+      <figcaption>
+        <span>Same photo. One click.</span>
+        <span class="label">Rosenlaui, CH · Nikon D5500 · EXP −0.18 · CON +45 · TEX +19</span>
+      </figcaption>
+    </figure>
   </section>
 
-  <!-- Features -------------------------------------------------------------->
-  <section class="section" id="features">
-    <h2>Built for the walk from camera to Lightroom</h2>
-    <div class="features">
-      <article><div class="fi">💾</div><h3>Straight from the card</h3>
-        <p>Insert your SD card and Preset Picker jumps to it. Raw previews load instantly from the camera's own embedded JPEG.</p></article>
-      <article><div class="fi">📅</div><h3>Organised by shoot</h3>
-        <p>Photos are grouped by the day they were taken (from EXIF, not file dates). Pick a day or drag out a date range.</p></article>
-      <article><div class="fi">◐</div><h3>Live before / after</h3>
-        <p>Open any shot big and drag the split to compare. Preview your presets' tone, colour grading, HSL, grain and vignette.</p></article>
-      <article><div class="fi">✓</div><h3>Lightroom‑ready export</h3>
-        <p>Each photo is copied with an XMP sidecar holding its preset. Import the folder and your raw files open already edited.</p></article>
-    </div>
-  </section>
-
-  <!-- How it works ---------------------------------------------------------->
-  <section class="section" id="how">
-    <h2>Three steps</h2>
-    <ol class="steps">
-      <li><span>1</span><div><h3>Choose</h3><p>Pick your card or folder, a shoot day, and the folder with your exported <code>.xmp</code> presets.</p></div></li>
-      <li><span>2</span><div><h3>Pick</h3><p>Set a preset per photo, or select a batch and apply one look to all. Check it in the large before/after view.</p></div></li>
-      <li><span>3</span><div><h3>Export</h3><p>Get a new folder on your Desktop. Import it into Lightroom and every raw photo carries its preset.</p></div></li>
+  <section class="how" id="how">
+    <h2>How it works</h2>
+    <ol class="frames">
+      <li>
+        <span class="label">01 — Choose</span>
+        <h3>Open your shoot</h3>
+        <p>Put in your SD card and the app finds it. Your photos are grouped by the day you took them, so last weekend's walk is one click away.</p>
+      </li>
+      <li>
+        <span class="label">02 — Pick</span>
+        <h3>A preset per photo</h3>
+        <p>Choose a preset under each shot, or select a few and give them the same look. Open any photo big and drag the slider to compare.</p>
+      </li>
+      <li>
+        <span class="label">03 — Export</span>
+        <h3>Straight into Lightroom</h3>
+        <p>You get a new folder on your Desktop. Import it into Lightroom and your raw photos open with their preset already applied.</p>
+      </li>
     </ol>
   </section>
 
-  <!-- Download -------------------------------------------------------------->
-  <section class="section" id="download">
-    <h2>Download</h2>
-    <p class="sub center" id="version">Latest version</p>
+  <section class="notes">
+    <blockquote>For people who shoot for fun.</blockquote>
+    <dl>
+      <div><dt>Raw files</dt><dd>Works with NEF, CR3, ARW, DNG and other raw formats. It reads the camera's own preview, so even big files open fast.</dd></div>
+      <div><dt>Your presets</dt><dd>Uses the .xmp presets you export from Lightroom, mine or anyone else's.</dd></div>
+      <div><dt>The preview</dt><dd>The before/after in the app is a close guess. Lightroom always does the real edit from the exact preset settings.</dd></div>
+      <div><dt>JPEG &amp; HEIC</dt><dd>Lightroom only picks up the preset automatically for raw photos. For phone pictures, apply it inside Lightroom.</dd></div>
+    </dl>
+  </section>
 
-    <div class="downloads">
-      <article class="dl" id="dl-win">
-        <span class="badge">Recommended for this computer</span>
-        <div class="dl-head">
-          <svg class="os" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 5.5 10.5 4.4v7.1H3zm8.5-1.2L21 3v8.5h-9.5zM3 12.5h7.5v7.1L3 18.5zm8.5 0H21V21l-9.5-1.3z"/></svg>
-          <div><h3>Windows</h3><p class="sub">Windows 10 &amp; 11 · every chip type</p></div>
-        </div>
-        <div class="variants">
-          <a class="variant" id="win-x64" data-asset="PresetPicker-Setup-x64.exe">
-            <div><b>Installer</b><small>Intel &amp; AMD PCs (most Windows computers)</small></div><span class="size"></span><span class="arrow">↓</span>
-          </a>
-          <a class="variant" id="win-arm64" data-asset="PresetPicker-Setup-x64.exe">
-            <div><b>Installer for ARM PCs</b><small>Snapdragon &amp; other ARM PCs on Windows 11 · same app, runs through built-in x64 emulation</small></div><span class="size"></span><span class="arrow">↓</span>
-          </a>
-        </div>
-        <p class="alt">No install rights? Get the <a data-asset="PresetPicker-Windows-x64.zip">portable zip</a> instead. Extract it before opening.</p>
+  <section class="download" id="download">
+    <h2>Download</h2>
+    <p class="label muted" id="version">Free download</p>
+
+    <div class="platforms">
+      <article class="platform" id="dl-mac">
+        <header>
+          <h3>Mac</h3>
+          <span class="here label">This computer</span>
+        </header>
+        <p class="label muted">macOS 11 or later · Apple Silicon (M1 and newer)</p>
+        <a class="file" id="mac-arm64" data-asset="PresetPicker-macOS-AppleSilicon.zip">
+          <span>Preset Picker for Mac</span><span class="label size"></span>
+        </a>
+        <p class="warn" id="intelMac" hidden>This Mac seems to have an Intel processor. For now the app needs a Mac with Apple Silicon, sorry.</p>
         <details>
-          <summary>Installing on Windows</summary>
-          <ol>
-            <li>Open <b>PresetPicker-Setup-x64.exe</b> and click through. No admin password needed; it adds Preset Picker to your Start menu.</li>
-            <li>If SmartScreen says "Windows protected your PC", click <b>More info → Run anyway</b>. The app isn't code-signed yet.</li>
-            <li>Uninstall any time from Settings → Apps.</li>
-            <li>Uses Microsoft Edge WebView2, which comes with Windows 11 and up-to-date Windows 10.</li>
+          <summary>Installing on a Mac · 4 steps</summary>
+          <ol class="guide">
+            <li>
+              <p>Open the download in your <b>Downloads</b> folder; it unzips by itself. Drag <b>Preset Picker</b> onto <b>Applications</b> in the sidebar.</p>
+              <img class="mac" src="img/install/mac-1-finder.png" width="680" height="410" loading="lazy" alt="Finder showing the Preset Picker app next to the downloaded zip in Downloads">
+            </li>
+            <li>
+              <p>Open Preset Picker. The first time, macOS stops it because the app isn't notarised by Apple yet. Click <b>Done</b> (not Move to Trash).</p>
+              <img class="mac" src="img/install/mac-2-blocked.png" width="680" height="410" loading="lazy" alt="macOS dialog: Preset Picker Not Opened, with Move to Trash and Done buttons">
+            </li>
+            <li id="mac-step-3">
+              <p>Open <b>System Settings → Privacy &amp; Security</b>, scroll down to <b>Security</b>, and click <b>Open Anyway</b> next to "Preset Picker was blocked". Confirm with your password or Touch ID.</p>
+            </li>
+            <li>
+              <p>That's it: Preset Picker opens, and from now on it starts normally. Click <b>Allow</b> when it asks to see your memory card or Desktop.</p>
+            </li>
           </ol>
         </details>
       </article>
 
-      <article class="dl" id="dl-mac">
-        <span class="badge">Recommended for this computer</span>
-        <div class="dl-head">
-          <svg class="os" viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="5" width="14" height="14" rx="3" fill="none" stroke="currentColor" stroke-width="2"/><path d="M9 1.5v3M15 1.5v3M9 19.5v3M15 19.5v3M1.5 9h3M1.5 15h3M19.5 9h3M19.5 15h3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><text x="12" y="15.5" text-anchor="middle" font-size="8" font-weight="700" fill="currentColor" font-family="Inter,sans-serif">M</text></svg>
-          <div><h3>macOS</h3><p class="sub">macOS 11 or later · Apple Silicon</p></div>
-        </div>
-        <div class="variants">
-          <a class="variant" id="mac-arm64" data-asset="PresetPicker-macOS-AppleSilicon.zip">
-            <div><b>Apple Silicon</b><small>M1, M2, M3, M4 and newer</small></div><span class="size"></span><span class="arrow">↓</span>
-          </a>
-        </div>
-        <p class="warn" id="intelMac" hidden>This Mac looks like it has an Intel processor. Preset Picker currently needs Apple Silicon.</p>
+      <article class="platform" id="dl-win">
+        <header>
+          <h3>Windows</h3>
+          <span class="here label">This computer</span>
+        </header>
+        <p class="label muted">Windows 10 &amp; 11 · Intel, AMD and ARM</p>
+        <a class="file" id="win-x64" data-asset="PresetPicker-Setup-x64.exe">
+          <span>Installer for Intel &amp; AMD PCs</span><span class="label size"></span>
+        </a>
+        <a class="file" id="win-arm64" data-asset="PresetPicker-Setup-x64.exe">
+          <span>Installer for ARM PCs <small>(Snapdragon, Windows 11)</small></span><span class="label size"></span>
+        </a>
+        <p class="small">Can't install software on this PC? Get the <a data-asset="PresetPicker-Windows-x64.zip">portable zip</a> and extract it before opening.</p>
         <details>
-          <summary>Installing on macOS</summary>
-          <ol>
-            <li>Unzip the download and drag <b>Preset Picker</b> into your Applications folder.</li>
-            <li>The first time, right-click the app and choose <b>Open</b>, then <b>Open</b> again. Or go to System Settings → Privacy &amp; Security → <b>Open Anyway</b>. The app isn't notarised yet.</li>
-            <li>Allow access to your memory card and Desktop when macOS asks.</li>
+          <summary>Installing on Windows · 6 steps</summary>
+          <ol class="guide">
+            <li>
+              <p>Open <b>PresetPicker-Setup-x64.exe</b> from your Downloads. If a blue box says "Windows protected your PC", click <b>More info</b>, then <b>Run anyway</b>. That's only because the app isn't code-signed yet.</p>
+            </li>
+            <li>
+              <p>Choose <b>Install for me only</b>. That way you don't need an admin password.</p>
+              <img src="img/install/win-1-install-mode.png" width="358" height="264" loading="lazy" alt="Select install mode dialog with 'Install for me only (recommended)' highlighted">
+            </li>
+            <li>
+              <p>Keep the suggested folder and click <b>Next</b>.</p>
+              <img src="img/install/win-2-destination.png" width="600" height="468" loading="lazy" alt="Select Destination Location page of the Preset Picker setup">
+            </li>
+            <li>
+              <p>Tick <b>Create a desktop shortcut</b> if you'd like one, then click <b>Next</b>.</p>
+              <img src="img/install/win-3-tasks.png" width="600" height="468" loading="lazy" alt="Select Additional Tasks page with the desktop shortcut option">
+            </li>
+            <li>
+              <p>Click <b>Install</b>. It takes a few seconds.</p>
+              <img src="img/install/win-4-ready.png" width="600" height="468" loading="lazy" alt="Ready to Install page">
+            </li>
+            <li>
+              <p>Leave <b>Launch Preset Picker</b> ticked and click <b>Finish</b>. From now on you'll find it in the Start menu.</p>
+              <img src="img/install/win-5-finished.png" width="600" height="468" loading="lazy" alt="Setup finished page with Launch Preset Picker ticked">
+            </li>
           </ol>
+          <p class="small">On an ARM PC it's the same installer; Windows 11 runs it for you. To remove the app, go to Settings → Apps.</p>
         </details>
       </article>
     </div>
-
-    <p class="note center">Lightroom reads preset sidecars for raw files (NEF, CR3, ARW, DNG…). For JPEG and HEIC photos, apply the preset inside Lightroom.</p>
   </section>
+
 </main>
 
 <footer class="foot">
-  <span>Preset Picker is free and open source.</span>
-  <a data-repo-link href="#" target="_blank" rel="noopener">Source code</a>
-  <a data-repo-link data-path="/issues" href="#" target="_blank" rel="noopener">Report a problem</a>
+  <p class="wordmark small">Grain <i>&amp;</i> Glow</p>
+  <p>Lightroom presets for hobby photographers. One click, real film feel.</p>
+  <p class="label muted">Preset Picker is free and open source (MIT) ·
+    <a data-repo-link href="#" target="_blank" rel="noopener">Source</a> ·
+    <a data-repo-link data-path="/issues" href="#" target="_blank" rel="noopener">Report a problem</a></p>
 </footer>
 
 <script src="main.js"></script>
