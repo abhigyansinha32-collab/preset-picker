@@ -173,59 +173,94 @@ function pumpThumbs() {
   }
 }
 
+/* Small preset renders ("looks"), shared by cards, the look menu and the filmstrip. */
+const lookCache = {};
+const getLook = (i, id) => (lookCache[i + "|" + id] ||= api.look(i, id));
+const thumbOf = i => cardOf(i)?.querySelector("img.before")?.src || "";
+const presetById = id => state.presets.find(p => p.id === id);
+
 async function showPhotos() {
   $("#showPhotos").disabled = true;
   state.photos = await api.load_photos(state.settings.source, state.from, state.to);
   state.choices = {};
   state.last = -1;
+  for (const k in lookCache) delete lookCache[k];
   const range = state.from === state.to ? fmtDay(state.from) : `${fmtDay(state.from)} – ${fmtDay(state.to)}`;
   $("#gridTitle").textContent = range;
   fillPresetSelect($("#setAll"), "—");
-  fillPresetSelect($("#bulk"), "Choose preset…");
-  fillPresetSelect($("#lbPreset"), "No preset");
+  fillPresetSelect($("#bulk"), "Choose a look…");
 
   const box = $("#photos");
   box.replaceChildren();
   thumbQueue.length = 0;
-  for (const p of state.photos) {
-    const card = el("div", "card" + (p.raw ? "" : " nonraw"));
-    card.dataset.i = p.i;
-    const ph = el("div", "ph");
-    const img = el("img");
-    img.dataset.i = p.i;
-    img.alt = p.name;
-    const expand = el("button", "expand", "⤢");
-    expand.title = "Large preview";
-    expand.onclick = e => { e.stopPropagation(); openLightbox(p.i); };
-    ph.append(img, el("div", "tick", "✓"), el("div", "badge"), el("span", "type", p.ext), expand);
-    const meta = el("div", "meta");
-    const row = el("div", "row");
-    const name = el("b", null, p.name);
-    name.title = p.path;
-    row.append(name, el("span", null, p.time.slice(0, 16)));
-    const sel = el("select");
-    fillPresetSelect(sel, "No preset");
-    sel.onchange = () => setChoice(p.i, sel.value);
-    sel.onclick = e => e.stopPropagation();
-    meta.append(row, sel, el("p", "warn", "Lightroom won't add this to a " + p.ext + " by itself. Apply it there with one click."));
-    card.append(ph, meta);
-    card.onclick = e => toggleSelect(p.i, e.shiftKey);
-    card.ondblclick = () => openLightbox(p.i);
-    box.append(card);
-    if (p.cloud) ph.append(el("div", "cloud", "☁︎ In iCloud"));
-    else observer.observe(img);
-  }
+  for (const p of state.photos) box.append(buildCard(p));
   show("grid");
   box.scrollTop = 0;
   refresh();
 }
 
+function buildCard(p) {
+  const card = el("div", "card" + (p.raw ? "" : " nonraw"));
+  card.dataset.i = p.i;
+
+  // Photo with a before/after slider (like the website): the preset render is clipped at --pos.
+  const ph = el("div", "ph");
+  ph.style.setProperty("--pos", "50%");
+  const before = el("img", "before");
+  before.dataset.i = p.i;
+  before.alt = p.name;
+  const after = el("img", "after");
+  after.alt = "";
+  const slide = Object.assign(el("input", "slide"), { type: "range", min: 0, max: 100, value: 50, title: "Drag to compare" });
+  slide.oninput = () => ph.style.setProperty("--pos", slide.value + "%");
+  for (const ev of ["click", "pointerdown", "dblclick"]) slide.addEventListener(ev, e => e.stopPropagation());
+  const tick = el("button", "tick", "✓");
+  tick.title = "Select (shift-click for a range)";
+  tick.onclick = e => { e.stopPropagation(); toggleSelect(p.i, e.shiftKey); };
+  const expand = el("button", "expand", "⤢");
+  expand.title = "Large preview";
+  expand.onclick = e => { e.stopPropagation(); openLightbox(p.i); };
+  ph.append(before, after, el("span", "handle"), slide, tick, el("div", "badge"), el("span", "type", p.ext), expand);
+
+  const meta = el("div", "meta");
+  const row = el("div", "row");
+  const name = el("b", null, p.name);
+  name.title = p.path;
+  row.append(name, el("span", null, p.time.slice(0, 16)));
+  const pick = el("button", "pick");
+  pick.append(el("span", "pick-name", "Choose a look"), el("span", "caret", "▾"));
+  pick.onclick = e => { e.stopPropagation(); openLooks(p.i, pick); };
+  meta.append(row, pick, el("p", "warn", "Lightroom won't add this to a " + p.ext + " by itself. Apply it there with one click."));
+  card.append(ph, meta);
+  card.onclick = e => toggleSelect(p.i, e.shiftKey);
+  card.ondblclick = () => openLightbox(p.i);
+  if (p.cloud) ph.append(el("div", "cloud", "☁︎ In iCloud"));
+  else observer.observe(before);
+  return card;
+}
+
 function cardOf(i) { return $(`.card[data-i="${i}"]`); }
+
+// Show a look on a card. id "" clears it. With full=true the slider is moved aside (used while hovering the menu).
+async function showOnCard(i, id, full = false) {
+  const card = cardOf(i);
+  if (!card) return;
+  const ph = card.querySelector(".ph");
+  const after = card.querySelector("img.after");
+  card.classList.toggle("previewing", full);
+  if (!id) { card.classList.remove("looked"); after.removeAttribute("src"); return; }
+  const want = id;
+  card.dataset.want = want;
+  const uri = await getLook(i, id);
+  if (card.dataset.want !== want || !uri) return;   // something newer was asked for meanwhile
+  after.src = uri;
+  card.classList.add("looked");
+  if (!full) ph.style.setProperty("--pos", card.querySelector(".slide").value + "%");
+}
 
 function setChoice(i, id) {
   if (id) state.choices[i] = id; else delete state.choices[i];
-  const card = cardOf(i);
-  card.querySelector("select").value = id;
+  showOnCard(i, id);
   refresh();
 }
 
@@ -247,6 +282,7 @@ function refresh() {
     const id = state.choices[card.dataset.i] || "";
     card.classList.toggle("has", !!id);
     card.querySelector(".badge").textContent = presetName(id);
+    card.querySelector(".pick-name").textContent = id ? presetName(id) : "Choose a look";
     if (id) n++;
     card.style.display = (state.filter === "todo" && id) || (state.filter === "done" && !id) ? "none" : "";
   }
@@ -257,6 +293,53 @@ function refresh() {
   $("#bar").classList.toggle("show", sel > 0);
   $("#export").disabled = n === 0;
   $("#export").textContent = n ? `Export ${n}` : "Export";
+}
+
+/* ------------------------------------------------------------ look menu */
+
+// One tile: the photo with a preset (or the original), its name and settings.
+function lookTile(i, id, onPick, onHover) {
+  const t = el("button", "look" + ((state.choices[i] || "") === id ? " on" : ""));
+  const img = el("img");
+  const p = presetById(id);
+  if (id) getLook(i, id).then(u => { if (u) img.src = u; });
+  else img.src = thumbOf(i);
+  t.append(img, el("b", null, id ? p.name : "Original"));
+  if (p?.settings) t.title = p.settings;
+  t.onclick = e => { e.stopPropagation(); onPick(id); };
+  t.onmouseenter = () => onHover(id);
+  return t;
+}
+
+function openLooks(i, anchor) {
+  closeLooks();
+  const menu = $("#looks");
+  const name = state.photos[i].name;
+  $("#looksTitle").textContent = `Looks for ${name}`;
+  const grid = $("#looksGrid");
+  grid.replaceChildren();
+  const restore = () => showOnCard(i, state.choices[i] || "");
+  for (const id of ["", ...state.presets.map(p => p.id)]) {
+    grid.append(lookTile(i, id, chosen => { setChoice(i, chosen); closeLooks(); }, hovered => showOnCard(i, hovered, true)));
+  }
+  grid.onmouseleave = restore;
+  menu.hidden = false;
+  menu.dataset.i = i;
+  // Place it under the button, kept inside the window.
+  const r = anchor.getBoundingClientRect();
+  const w = menu.offsetWidth, h = menu.offsetHeight;
+  let x = Math.min(r.left, innerWidth - w - 12), y = r.bottom + 6;
+  if (y + h > innerHeight - 12) y = Math.max(12, r.top - h - 6);
+  menu.style.left = Math.max(12, x) + "px";
+  menu.style.top = y + "px";
+}
+
+function closeLooks() {
+  const menu = $("#looks");
+  if (menu.hidden) return;
+  menu.hidden = true;
+  const i = Number(menu.dataset.i);
+  showOnCard(i, state.choices[i] || "");
 }
 
 async function exportPhotos() {
@@ -292,36 +375,65 @@ function setMode(mode) {
 
 async function openLightbox(i) {
   if (i < 0 || i >= state.photos.length) return;
+  closeLooks();
   const lb = state.lb;
   lb.i = i;
   const p = state.photos[i];
   $("#lightbox").hidden = false;
   $("#lbName").textContent = p.name;
   $("#lbMeta").textContent = `${p.ext} · ${p.time}`;
-  $("#lbPreset").value = state.choices[i] || "";
   $("#lbPrev").disabled = i === 0;
   $("#lbNext").disabled = i === state.photos.length - 1;
+  renderStrip();
   await renderLightbox();
+}
+
+// The filmstrip of presets under the large preview: hover to see a look instantly, click to use it.
+function renderStrip() {
+  const i = state.lb.i;
+  const strip = $("#lbLooks");
+  strip.replaceChildren();
+  for (const id of ["", ...state.presets.map(p => p.id)]) {
+    strip.append(lookTile(i, id, chosen => { setChoice(i, chosen); renderStrip(); renderLightbox(); }, hoverLook));
+  }
+  strip.onmouseleave = () => hoverLook(null);
+}
+
+async function hoverLook(id) {
+  const lb = state.lb;
+  if (id === null) {                          // left the strip: back to the chosen look
+    $("#lbAfter").src = lb.afterFull || "";
+    $("#lbSettings").textContent = presetById(state.choices[lb.i])?.settings || "";
+    if (!state.choices[lb.i]) setMode("before");
+    return;
+  }
+  if (!id) { setMode("before"); $("#lbSettings").textContent = ""; return; }
+  if (lb.mode === "before") setMode("split");
+  $("#lbSettings").textContent = presetById(id)?.settings || "";
+  const uri = await getLook(lb.i, id);
+  if (uri) $("#lbAfter").src = uri;
 }
 
 async function renderLightbox() {
   const lb = state.lb;
   const token = ++lb.token;
   const preset = state.choices[lb.i] || "";
-  $("#stage").classList.add("loading");
+  // Show the small versions straight away; the sharp ones replace them when ready.
+  $("#lbBefore").src = thumbOf(lb.i);
+  if (preset) getLook(lb.i, preset).then(u => { if (token === lb.token && u) $("#lbAfter").src = u; });
+  $("#lbSettings").textContent = presetById(preset)?.settings || "";
   if (!preset) setMode("before");
   else if (lb.mode === "before") setMode("split");
+  setSplit(lb.pos);
+  $("#stage").classList.add("loading");
   const r = await api.preview(lb.i, preset);
   if (token !== lb.token) return;          // user moved on while rendering
+  $("#stage").classList.remove("loading");
   $("#lbError").hidden = !r.error;
   $("#compare").hidden = !!r.error;
-  $("#stage").classList.remove("loading");
   if (r.error) { $("#lbError").textContent = r.error; return; }
-  $("#lbSettings").textContent = r.settings || "";
   $("#lbBefore").src = r.before;
-  $("#lbAfter").src = r.after;
-  setSplit(lb.pos);
-  $("#stage").classList.remove("loading");
+  $("#lbAfter").src = lb.afterFull = r.after;
 }
 
 function closeLightbox() {
@@ -335,7 +447,6 @@ function bindLightbox() {
   $("#lbClose").onclick = closeLightbox;
   $("#lbPrev").onclick = () => openLightbox(state.lb.i - 1);
   $("#lbNext").onclick = () => openLightbox(state.lb.i + 1);
-  $("#lbPreset").onchange = e => { setChoice(state.lb.i, e.target.value); renderLightbox(); };
   $$("#lbMode button").forEach(b => b.onclick = () => setMode(b.dataset.m));
   const cmp = $("#compare");
   let dragging = false;
@@ -354,6 +465,7 @@ function bindLightbox() {
 /* ------------------------------------------------------------------ keys */
 
 document.addEventListener("keydown", e => {
+  if (!$("#looks").hidden && e.key === "Escape") { closeLooks(); return; }
   if (!$("#lightbox").hidden) {
     if (e.key === "Escape") closeLightbox();
     else if (e.key === "ArrowLeft") openLightbox(state.lb.i - 1);
@@ -416,6 +528,9 @@ async function boot() {
 
   $("#backToGrid").onclick = () => { show("grid"); refresh(); };
   $("#startOver").onclick = () => show("setup");
+  $("#looksClose").onclick = closeLooks;
+  document.addEventListener("click", e => { if (!e.target.closest("#looks")) closeLooks(); });
+  $("#photos").addEventListener("scroll", closeLooks, { passive: true });
   bindLightbox();
   setInterval(pollCards, 3000);
 }

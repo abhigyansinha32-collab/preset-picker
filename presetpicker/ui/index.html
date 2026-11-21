@@ -119,10 +119,16 @@
   <p class="settings" id="lbSettings"></p>
   <footer class="lb-bottom">
     <button class="icon" id="lbPrev" title="Previous (←)">‹</button>
-    <select id="lbPreset"></select>
+    <div class="strip" id="lbLooks" aria-label="Presets"></div>
     <button class="icon" id="lbNext" title="Next (→)">›</button>
-    <span class="note">Preview is a close guess · Lightroom does the real edit</span>
   </footer>
+  <span class="note">Preview is a close guess · Lightroom does the real edit</span>
+</div>
+
+<!-- Look menu: this photo with every preset, opened from a card -->
+<div class="looks" id="looks" hidden>
+  <div class="looks-head"><span class="label" id="looksTitle"></span><button class="link" id="looksClose">Close</button></div>
+  <div class="looks-grid" id="looksGrid"></div>
 </div>
 
 <script src="app.js"></script>
