@@ -32,19 +32,21 @@ shot mac-1-finder 5
 open "$APP" &
 shot mac-2-blocked 10
 
-# 3. System Settings > Privacy & Security, which now offers "Open Anyway" near the bottom.
+# 3. Click "Done", then System Settings > Privacy & Security shows "Open Anyway" near the bottom.
+limit 20 osascript -e 'tell application "System Events" to tell process "CoreServicesUIAgent" to click button "Done" of window 1'
+sleep 2
 open "x-apple.systempreferences:com.apple.settings.PrivacySecurity.extension" &
-shot mac-3-privacy 10
-limit 20 osascript -e 'tell application "System Events" to tell process "System Settings"
+sleep 10
+limit 60 osascript -e 'tell application "System Events" to tell process "System Settings"
   set frontmost to true
-  repeat 40 times
-    key code 125
-  end repeat
+  set b to first button of (entire contents of window 1) whose name is "Open Anyway"
+  perform action "AXScrollToVisible" of b
 end tell'
-shot mac-4-open-anyway 3
-for i in 1 2 3; do
-  limit 20 osascript -e 'tell application "System Events" to scroll area 1 of group 1 of group 3 of splitter group 1 of group 1 of window 1 of process "System Settings"' >/dev/null
-  limit 10 osascript -e 'tell application "System Events" to key code 119'   # End
-done
-shot mac-5-open-anyway-end 3
+shot mac-3-open-anyway 3
+
+# 4. Clicking "Open Anyway" asks once more to confirm.
+limit 60 osascript -e 'tell application "System Events" to tell process "System Settings"
+  click (first button of (entire contents of window 1) whose name is "Open Anyway")
+end tell'
+shot mac-4-confirm 5
 exit 0
