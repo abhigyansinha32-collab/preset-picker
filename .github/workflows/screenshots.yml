@@ -43,7 +43,7 @@ jobs:
 
       - name: Screenshots (macOS)
         if: runner.os == 'macOS'
-        timeout-minutes: 10
+        timeout-minutes: 15
         run: |
           ditto -c -k --keepParent "dist/Preset Picker.app" PresetPicker-macOS-AppleSilicon.zip
           bash tools/screenshots_mac.sh PresetPicker-macOS-AppleSilicon.zip shots

@@ -65,7 +65,7 @@ function renderSources() {
   }
   const choose = el("button", "source");
   const txt = el("div");
-  txt.append(el("b", null, "Choose folder…"), el("small", null, "Any folder on your Mac"));
+  txt.append(el("b", null, "Choose folder…"), el("small", null, "Any folder on this computer"));
   choose.append(icon("plus"), txt);
   choose.onclick = async () => {
     const s = await api.choose_folder("source");
