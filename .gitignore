@@ -6,3 +6,6 @@ __pycache__/
 assets/AppIcon.icns
 .DS_Store
 assets/AppIcon.ico
+site/app/index.html
+site/app/app.css
+site/app/app.js

@@ -136,6 +136,8 @@ section h2 { font-size: clamp(36px, 4.6vw, 56px); letter-spacing: -.01em; }
 
 /* Downloads */
 .download > .label { margin-top: 10px; }
+.webnote { margin-top: 18px; color: var(--muted); font-size: 16px; }
+.webnote a { color: var(--ink); font-weight: 500; text-underline-offset: 4px; text-decoration-thickness: 1px; }
 .platforms { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; margin-top: 40px; align-items: start; }
 .platform { border: 1px solid var(--rule); padding: 28px; background: var(--paper-2); }
 .platform header { display: flex; justify-content: space-between; align-items: baseline; }
@@ -188,5 +190,5 @@ details > .small { margin-top: 4px; }
   .frames li { margin-right: 0; margin-bottom: 18px; }
   .notes { grid-template-columns: 1fr; gap: 36px; }
   .notes dl { grid-template-columns: 1fr; }
-  .top nav a:not([href="#download"]) { display: none; }
+  .top nav a:not([href="#download"]):not([href="app/"]) { display: none; }
 }

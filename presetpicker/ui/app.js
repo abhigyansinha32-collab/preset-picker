@@ -123,7 +123,9 @@ function renderPresets() {
   const box = $("#presetList");
   box.replaceChildren();
   if (!state.presets.length) {
-    box.append(el("p", "warn", "I can't find any .xmp presets here. Export your presets from Lightroom, then choose that folder."));
+    box.append(el("p", "warn", state.web
+      ? "Choose your .xmp preset files (export them from Lightroom first). They stay saved in this browser."
+      : "I can't find any .xmp presets here. Export your presets from Lightroom, then choose that folder."));
   } else {
     for (const p of state.presets) box.append(el("span", "chip", p.name));
   }
@@ -351,6 +353,11 @@ async function exportPhotos() {
   const total = r.raw + r.other;
   $("#doneTitle").textContent = `${total} photo${total === 1 ? "" : "s"} ready for Lightroom`;
   $("#donePath").textContent = r.folder;
+  if (state.web) {
+    $("#doneSub").textContent = r.zip
+      ? "Unzip it, then import the folder into Lightroom. Your raw photos open with their preset already on."
+      : "Import this folder into Lightroom. Your raw photos open with their preset already on.";
+  }
   $("#doneWarn").hidden = !r.other;
   $("#doneWarn").textContent = r.other
     ? `${r.other} JPEG/HEIC photo${r.other === 1 ? "" : "s"} came along too. Lightroom won't put the preset on ${r.other === 1 ? "it" : "those"} by itself, so apply it there with one click.`
@@ -494,6 +501,12 @@ async function boot() {
   state.cards = init.cards;
   state.presets = init.presets;
   $("#version").textContent = "Version " + init.version;
+  if (init.platform === "web") {
+    state.web = true;
+    document.documentElement.classList.add("web");
+    $("#reveal").hidden = true;
+    if (!window.showDirectoryPicker) $('[data-choose="output"]').hidden = true;
+  }
   if (init.platform === "win32") {
     document.documentElement.classList.add("win");
     $("#reveal").textContent = "Show in Explorer";
